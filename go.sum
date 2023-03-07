@@ -1,0 +1,13 @@
+github.com/exyzzy/metaapi v0.0.0-20200621193159-a71117f542d7 h1:xg2uv8q33noZYa+gnEA9uFt7XWD/FTvMqI2x+bVoYRU=
+github.com/exyzzy/metaapi v0.0.0-20200621193159-a71117f542d7/go.mod h1:wBf8ct6OBbncFZDbtwZARMzyaxKwyC/9+Dte44iFtbY=
+github.com/gertd/go-pluralize v0.2.1 h1:M3uASbVjMnTsPb0PNqg+E/24Vwigyo/tvyMTtAlLgiA=
+github.com/gertd/go-pluralize v0.2.1/go.mod h1:rbYaKDbsXxmRfr8uygAEKhOWsjyrrqrkHVpZvoOp8zk=
+github.com/lib/pq v1.10.7 h1:p7ZhMD+KsSRozJr34udlUrhboJwWAgCg34+/ZZNvZZw=
+github.com/lib/pq v1.10.7/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
+github.com/timtadh/data-structures v0.6.1 h1:76eDpwngj2rEi9r/qvdH6YL7wMXGsoFFzhEylo/IacA=
+github.com/timtadh/data-structures v0.6.1/go.mod h1:uYUnI1cQi/5yMCc7s23I+x8Mn8BCMf4WgK+7/4QSEk4=
+github.com/timtadh/data-structures v0.6.2 h1:zybDnU5NLjJ7WKMDJpvVwczQuf1wSLBgdRHZ9O4AqJ0=
+github.com/timtadh/data-structures v0.6.2/go.mod h1:uYUnI1cQi/5yMCc7s23I+x8Mn8BCMf4WgK+7/4QSEk4=
+github.com/timtadh/getopt v1.0.0/go.mod h1:L3EL6YN2G0eIAhYBo9b7SB9d/kEQmdnwthIlMJfj210=
+github.com/timtadh/lexmachine v0.2.3 h1:ZqlfHnfMcAygtbNM5Gv7jQf8hmM8LfVzDjfCrq235NQ=
+github.com/timtadh/lexmachine v0.2.3/go.mod h1:oK1NW+93fQSIF6s+J6sXBFWsCPCFbNmrwKV1i0aqvW0=

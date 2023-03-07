@@ -71,6 +71,8 @@ var fileMap = map[string]FileName{
 //Generate assumes that the primary ID is in the first column (index 0)
 func Generate(dta interface{}, txtFile string) error {
 
+	fmt.Println("Generating")
+
 	var sm StateMachine
 	var prefix string
 	var suffix string
@@ -327,36 +329,69 @@ func (table Table) CreateTableStatement() string {
 
 // {<go type>, <go nulltype> <go nulltype field>}
 var typeMap = map[string][]string{
-	"BOOLEAN":     {"bool", "sql.NullBool", ".Bool"},
-	"BOOL":        {"bool", "sql.NullBool", ".Bool"},
-	"CHARID":      {"string", "sql.NullString", ".String"},
-	"VARCHARID":   {"string", "sql.NullString", ".String"},
-	"TEXT":        {"string", "sql.NullString", ".String"},
-	"SMALLINT":    {"int16", "sql.NullInt32", ".Int32"},
-	"INT":         {"int32", "sql.NullInt32", ".Int32"},
-	"INTEGER":     {"int32", "sql.NullInt32", ".Int32"},
-	"BIGINT":      {"int64", "sql.NullInt64", ".Int64"},
-	"SMALLSERIAL": {"int16", "sql.NullInt32", ".Int32"},
-	"SERIAL":      {"int32", "sql.NullInt32", ".Int32"},
-	"BIGSERIAL":   {"int64", "sql.NullInt64", ".Int64"},
-	"FLOATID":     {"float64", "sql.NullFloat64", ".Float64"},
-	"REAL":        {"float32", "sql.NullFloat64", ".Float64"},
-	"FLOAT8":      {"float32", "sql.NullFloat64", ".Float64"},
-	"DECIMAL":     {"float64", "sql.NullFloat64", ".Float64"},
-	"NUMERIC":     {"float64", "sql.NullFloat64", ".Float64"},
-	"NUMERICID":   {"float64", "sql.NullFloat64", ".Float64"},
-	"PRECISION":   {"float64", "sql.NullFloat64", ".Float64"}, //DOUBLE PRECISION
-	"DATE":        {"time.Time", "sql.NullTime", ".Time"},
-	"TIME":        {"time.Time", "sql.NullTime", ".Time"},
-	"TIMESTAMPTZ": {"time.Time", "sql.NullTime", ".Time"},
-	"TIMESTAMP":   {"time.Time", "sql.NullTime", ".Time"},
-	"INTERVAL":    {"string", "sql.NullString", ".String"},
-	"JSON":        {"string", "sql.NullString", ".String"},
-	"JSONB":       {"string", "sql.NullString", ".String"},
-	"UUID":        {"string", "sql.NullString", ".String"},
+	"BOOLEAN":     {"bool", "*bool", ".Bool"},
+	"BOOL":        {"bool", "*bool", ".Bool"},
+	"CHARID":      {"string", "*string", ".String"},
+	"VARCHARID":   {"string", "*string", ".String"},
+	"TEXT":        {"string", "*string", ".String"},
+	"SMALLINT":    {"int16", "*int16", ".Int32"},
+	"INT":         {"int32", "*int32", ".Int32"},
+	"INTEGER":     {"int32", "*int32", ".Int32"},
+	"BIGINT":      {"int64", "*int64", ".Int64"},
+	"SMALLSERIAL": {"int16", "*int16", ".Int32"},
+	"SERIAL":      {"int32", "*int32", ".Int32"},
+	"BIGSERIAL":   {"int64", "*int64", ".Int64"},
+	"FLOATID":     {"float64", "*float64", ".Float64"},
+	"REAL":        {"float32", "*float32", ".Float64"},
+	"FLOAT8":      {"float32", "*float32", ".Float64"},
+	"DECIMAL":     {"float64", "*float64", ".Float64"},
+	"NUMERIC":     {"float64", "*float64", ".Float64"},
+	"NUMERICID":   {"float64", "*float64", ".Float64"},
+	"PRECISION":   {"float64", "*float64", ".Float64"}, //DOUBLE PRECISION
+	"DATE":        {"time.Time", "*time.Time", ".Time"},
+	"TIME":        {"time.Time", "*time.Time", ".Time"},
+	"TIMESTAMPTZ": {"time.Time", "*time.Time", ".Time"},
+	"TIMESTAMP":   {"time.Time", "*time.Time", ".Time"},
+	"INTERVAL":    {"string", "*string", ".String"},
+	"JSON":        {"string", "*string", ".String"},
+	"JSONB":       {"string", "*string", ".String"},
+	"UUID":        {"string", "*string", ".String"},
 }
 
+// {<go type>, <go nulltype> <go nulltype field>}
+// var typeMap = map[string][]string{
+// 	"BOOLEAN":     {"bool", "sql.NullBool", ".Bool"},
+// 	"BOOL":        {"bool", "sql.NullBool", ".Bool"},
+// 	"CHARID":      {"string", "sql.NullString", ".String"},
+// 	"VARCHARID":   {"string", "sql.NullString", ".String"},
+// 	"TEXT":        {"string", "sql.NullString", ".String"},
+// 	"SMALLINT":    {"int16", "sql.NullInt32", ".Int32"},
+// 	"INT":         {"int32", "sql.NullInt32", ".Int32"},
+// 	"INTEGER":     {"int32", "sql.NullInt32", ".Int32"},
+// 	"BIGINT":      {"int64", "sql.NullInt64", ".Int64"},
+// 	"SMALLSERIAL": {"int16", "sql.NullInt32", ".Int32"},
+// 	"SERIAL":      {"int32", "sql.NullInt32", ".Int32"},
+// 	"BIGSERIAL":   {"int64", "sql.NullInt64", ".Int64"},
+// 	"FLOATID":     {"float64", "sql.NullFloat64", ".Float64"},
+// 	"REAL":        {"float32", "sql.NullFloat64", ".Float64"},
+// 	"FLOAT8":      {"float32", "sql.NullFloat64", ".Float64"},
+// 	"DECIMAL":     {"float64", "sql.NullFloat64", ".Float64"},
+// 	"NUMERIC":     {"float64", "sql.NullFloat64", ".Float64"},
+// 	"NUMERICID":   {"float64", "sql.NullFloat64", ".Float64"},
+// 	"PRECISION":   {"float64", "sql.NullFloat64", ".Float64"}, //DOUBLE PRECISION
+// 	"DATE":        {"time.Time", "sql.NullTime", ".Time"},
+// 	"TIME":        {"time.Time", "sql.NullTime", ".Time"},
+// 	"TIMESTAMPTZ": {"time.Time", "sql.NullTime", ".Time"},
+// 	"TIMESTAMP":   {"time.Time", "sql.NullTime", ".Time"},
+// 	"INTERVAL":    {"string", "sql.NullString", ".String"},
+// 	"JSON":        {"string", "sql.NullString", ".String"},
+// 	"JSONB":       {"string", "sql.NullString", ".String"},
+// 	"UUID":        {"string", "sql.NullString", ".String"},
+// }
+
 func (table Table) StructFields() string {
+
+	fmt.Println("structuring fields")
 
 	var s string
 
@@ -368,7 +403,7 @@ func (table Table) StructFields() string {
 			s += typeMap[column.Type][0]
 		}
 		// s += " " + typeMap[column.Type][0]
-		s += "`xml:\"" + camelize(column.Name) + "\" json:\"" + lowerize(camelize(column.Name)) + "\"`"
+		s += "`sql:\"" + column.Name + "\" `xml:\"" + camelize(column.Name) + "\" json:\"" + lowerize(camelize(column.Name)) + "\"`"
 		s += "\n"
 	}
 	return s

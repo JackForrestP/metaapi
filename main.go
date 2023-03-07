@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/exyzzy/metaapi/metasql"
-
 	lex "github.com/timtadh/lexmachine"
 )
 
@@ -19,9 +18,15 @@ var DEBUG = false
 
 func main() {
 
+	fmt.Println("starting main, new 3!!!")
+
 	sqlPtr := flag.String("sql", "", ".sql input file to parse")
 	txtPtr := flag.String("txt", "api.txt", "go template as .txt file")
 	pipePtr := flag.Bool("pipe", false, "use piped generation")
+
+	// var pipePtr *bool //flag.Bool("pipe", false, "use piped generation")
+	// valBol := false
+	// pipePtr = &valBol
 
 	flag.Parse()
 
