@@ -1421,7 +1421,7 @@ func CreateTableCommunity_product_results(db *sql.DB) (err error) {
 	if err != nil {
 		return
 	}
-	_, err = db.Exec(`create table community_product_results ( id integer generated always as identity primary key , user_count integer not null , count integer not null , product_uuid varchar(36) not null references products(uuid) , tst decimal , time_awake decimal , time_rem decimal , time_light decimal , time_deep decimal , num_awakes decimal , score decimal , sleep_onset decimal , sleep_efficiency decimal ) ; `)
+	_, err = db.Exec(`create table community_product_results ( id integer generated always as identity primary key , user_count integer not null , count integer not null , product_uuid varchar(36) not null references products(uuid) , created_at timestamptz , tst decimal , time_awake decimal , time_rem decimal , time_light decimal , time_deep decimal , num_awakes decimal , score decimal , sleep_onset decimal , sleep_efficiency decimal ) ; `)
 	return
 }
 
@@ -1437,6 +1437,7 @@ type Community_product_result struct {
 	UserCount int32`xml:"UserCount" json:"usercount"`
 	Count int32`xml:"Count" json:"count"`
 	ProductUuid string`xml:"ProductUuid" json:"productuuid"`
+	CreatedAt sql.NullTime`xml:"CreatedAt" json:"createdat"`
 	Tst sql.NullFloat64`xml:"Tst" json:"tst"`
 	TimeAwake sql.NullFloat64`xml:"TimeAwake" json:"timeawake"`
 	TimeRem sql.NullFloat64`xml:"TimeRem" json:"timerem"`
@@ -1451,31 +1452,31 @@ type Community_product_result struct {
 
 //Create
 func (community_product_result *Community_product_result) CreateCommunity_product_result(db *sql.DB) (result Community_product_result, err error) {
-	stmt, err := db.Prepare("INSERT INTO community_product_results ( user_count, count, product_uuid, tst, time_awake, time_rem, time_light, time_deep, num_awakes, score, sleep_onset, sleep_efficiency) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id, user_count, count, product_uuid, tst, time_awake, time_rem, time_light, time_deep, num_awakes, score, sleep_onset, sleep_efficiency")
+	stmt, err := db.Prepare("INSERT INTO community_product_results ( user_count, count, product_uuid, created_at, tst, time_awake, time_rem, time_light, time_deep, num_awakes, score, sleep_onset, sleep_efficiency) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING id, user_count, count, product_uuid, created_at, tst, time_awake, time_rem, time_light, time_deep, num_awakes, score, sleep_onset, sleep_efficiency")
 	if err != nil {
 		return
 	}
 	defer stmt.Close()
-	err = stmt.QueryRow( community_product_result.UserCount, community_product_result.Count, community_product_result.ProductUuid, community_product_result.Tst, community_product_result.TimeAwake, community_product_result.TimeRem, community_product_result.TimeLight, community_product_result.TimeDeep, community_product_result.NumAwakes, community_product_result.Score, community_product_result.SleepOnset, community_product_result.SleepEfficiency).Scan( &result.Id, &result.UserCount, &result.Count, &result.ProductUuid, &result.Tst, &result.TimeAwake, &result.TimeRem, &result.TimeLight, &result.TimeDeep, &result.NumAwakes, &result.Score, &result.SleepOnset, &result.SleepEfficiency)
+	err = stmt.QueryRow( community_product_result.UserCount, community_product_result.Count, community_product_result.ProductUuid, community_product_result.CreatedAt, community_product_result.Tst, community_product_result.TimeAwake, community_product_result.TimeRem, community_product_result.TimeLight, community_product_result.TimeDeep, community_product_result.NumAwakes, community_product_result.Score, community_product_result.SleepOnset, community_product_result.SleepEfficiency).Scan( &result.Id, &result.UserCount, &result.Count, &result.ProductUuid, &result.CreatedAt, &result.Tst, &result.TimeAwake, &result.TimeRem, &result.TimeLight, &result.TimeDeep, &result.NumAwakes, &result.Score, &result.SleepOnset, &result.SleepEfficiency)
 	return
 }
 
 //Retrieve
 func (community_product_result *Community_product_result) RetrieveCommunity_product_result(db *sql.DB) (result Community_product_result, err error) {
 	result = Community_product_result{}
-	err = db.QueryRow("SELECT id, user_count, count, product_uuid, tst, time_awake, time_rem, time_light, time_deep, num_awakes, score, sleep_onset, sleep_efficiency FROM community_product_results WHERE (id = $1)", community_product_result.Id).Scan( &result.Id, &result.UserCount, &result.Count, &result.ProductUuid, &result.Tst, &result.TimeAwake, &result.TimeRem, &result.TimeLight, &result.TimeDeep, &result.NumAwakes, &result.Score, &result.SleepOnset, &result.SleepEfficiency)
+	err = db.QueryRow("SELECT id, user_count, count, product_uuid, created_at, tst, time_awake, time_rem, time_light, time_deep, num_awakes, score, sleep_onset, sleep_efficiency FROM community_product_results WHERE (id = $1)", community_product_result.Id).Scan( &result.Id, &result.UserCount, &result.Count, &result.ProductUuid, &result.CreatedAt, &result.Tst, &result.TimeAwake, &result.TimeRem, &result.TimeLight, &result.TimeDeep, &result.NumAwakes, &result.Score, &result.SleepOnset, &result.SleepEfficiency)
 	return
 }
 
 //RetrieveAll
 func RetrieveAllCommunity_product_results(db *sql.DB) (community_product_results []Community_product_result, err error) {
-	rows, err := db.Query("SELECT id, user_count, count, product_uuid, tst, time_awake, time_rem, time_light, time_deep, num_awakes, score, sleep_onset, sleep_efficiency FROM community_product_results ORDER BY id DESC")
+	rows, err := db.Query("SELECT id, user_count, count, product_uuid, created_at, tst, time_awake, time_rem, time_light, time_deep, num_awakes, score, sleep_onset, sleep_efficiency FROM community_product_results ORDER BY id DESC")
 	if err != nil {
 		return
 	}
 	for rows.Next() {
 		result := Community_product_result{}
-		if err = rows.Scan( &result.Id, &result.UserCount, &result.Count, &result.ProductUuid, &result.Tst, &result.TimeAwake, &result.TimeRem, &result.TimeLight, &result.TimeDeep, &result.NumAwakes, &result.Score, &result.SleepOnset, &result.SleepEfficiency); err != nil {
+		if err = rows.Scan( &result.Id, &result.UserCount, &result.Count, &result.ProductUuid, &result.CreatedAt, &result.Tst, &result.TimeAwake, &result.TimeRem, &result.TimeLight, &result.TimeDeep, &result.NumAwakes, &result.Score, &result.SleepOnset, &result.SleepEfficiency); err != nil {
 			return
 		}
 		community_product_results = append(community_product_results, result)
@@ -1486,13 +1487,13 @@ func RetrieveAllCommunity_product_results(db *sql.DB) (community_product_results
 
 //Update
 func (community_product_result *Community_product_result) UpdateCommunity_product_result(db *sql.DB) (result Community_product_result, err error) {
-	stmt, err := db.Prepare("UPDATE community_product_results SET user_count = $2, count = $3, product_uuid = $4, tst = $5, time_awake = $6, time_rem = $7, time_light = $8, time_deep = $9, num_awakes = $10, score = $11, sleep_onset = $12, sleep_efficiency = $13 WHERE (id = $1) RETURNING id, user_count, count, product_uuid, tst, time_awake, time_rem, time_light, time_deep, num_awakes, score, sleep_onset, sleep_efficiency")
+	stmt, err := db.Prepare("UPDATE community_product_results SET user_count = $2, count = $3, product_uuid = $4, created_at = $5, tst = $6, time_awake = $7, time_rem = $8, time_light = $9, time_deep = $10, num_awakes = $11, score = $12, sleep_onset = $13, sleep_efficiency = $14 WHERE (id = $1) RETURNING id, user_count, count, product_uuid, created_at, tst, time_awake, time_rem, time_light, time_deep, num_awakes, score, sleep_onset, sleep_efficiency")
 	if err != nil {
 		return
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow( community_product_result.Id, community_product_result.UserCount, community_product_result.Count, community_product_result.ProductUuid, community_product_result.Tst, community_product_result.TimeAwake, community_product_result.TimeRem, community_product_result.TimeLight, community_product_result.TimeDeep, community_product_result.NumAwakes, community_product_result.Score, community_product_result.SleepOnset, community_product_result.SleepEfficiency).Scan( &result.Id, &result.UserCount, &result.Count, &result.ProductUuid, &result.Tst, &result.TimeAwake, &result.TimeRem, &result.TimeLight, &result.TimeDeep, &result.NumAwakes, &result.Score, &result.SleepOnset, &result.SleepEfficiency)
+	err = stmt.QueryRow( community_product_result.Id, community_product_result.UserCount, community_product_result.Count, community_product_result.ProductUuid, community_product_result.CreatedAt, community_product_result.Tst, community_product_result.TimeAwake, community_product_result.TimeRem, community_product_result.TimeLight, community_product_result.TimeDeep, community_product_result.NumAwakes, community_product_result.Score, community_product_result.SleepOnset, community_product_result.SleepEfficiency).Scan( &result.Id, &result.UserCount, &result.Count, &result.ProductUuid, &result.CreatedAt, &result.Tst, &result.TimeAwake, &result.TimeRem, &result.TimeLight, &result.TimeDeep, &result.NumAwakes, &result.Score, &result.SleepOnset, &result.SleepEfficiency)
 	return
 }
 
@@ -1511,6 +1512,306 @@ func (community_product_result *Community_product_result) DeleteCommunity_produc
 //DeleteAll
 func DeleteAllCommunity_product_results(db *sql.DB) (err error) {
 	stmt, err := db.Prepare("DELETE FROM community_product_results")
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec()
+	return
+}
+
+
+// ======= Product_user_submission =======
+
+//Create Table
+func CreateTableProduct_user_submissions(db *sql.DB) (err error) {
+	_, err = db.Exec("DROP TABLE IF EXISTS product_user_submissions CASCADE")
+	if err != nil {
+		return
+	}
+	_, err = db.Exec(`create table product_user_submissions ( id integer generated always as identity primary key , uuid varchar(36) not null unique , product_uuid varchar(36) not null references products(uuid) , user_id integer not null references users(id) , creation_date timestamptz not null ) ; `)
+	return
+}
+
+//Drop Table
+func DropTableProduct_user_submissions(db *sql.DB) (err error) {
+	_, err = db.Exec("DROP TABLE IF EXISTS product_user_submissions CASCADE")
+	return
+}
+
+//Struct
+type Product_user_submission struct {
+	Id int32`xml:"Id" json:"id"`
+	Uuid string`xml:"Uuid" json:"uuid"`
+	ProductUuid string`xml:"ProductUuid" json:"productuuid"`
+	UserId int32`xml:"UserId" json:"userid"`
+	CreationDate time.Time`xml:"CreationDate" json:"creationdate"`
+
+}
+
+//Create
+func (product_user_submission *Product_user_submission) CreateProduct_user_submission(db *sql.DB) (result Product_user_submission, err error) {
+	stmt, err := db.Prepare("INSERT INTO product_user_submissions ( uuid, product_uuid, user_id, creation_date) VALUES ($1,$2,$3,$4) RETURNING id, uuid, product_uuid, user_id, creation_date")
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+	err = stmt.QueryRow( product_user_submission.Uuid, product_user_submission.ProductUuid, product_user_submission.UserId, product_user_submission.CreationDate).Scan( &result.Id, &result.Uuid, &result.ProductUuid, &result.UserId, &result.CreationDate)
+	return
+}
+
+//Retrieve
+func (product_user_submission *Product_user_submission) RetrieveProduct_user_submission(db *sql.DB) (result Product_user_submission, err error) {
+	result = Product_user_submission{}
+	err = db.QueryRow("SELECT id, uuid, product_uuid, user_id, creation_date FROM product_user_submissions WHERE (id = $1)", product_user_submission.Id).Scan( &result.Id, &result.Uuid, &result.ProductUuid, &result.UserId, &result.CreationDate)
+	return
+}
+
+//RetrieveAll
+func RetrieveAllProduct_user_submissions(db *sql.DB) (product_user_submissions []Product_user_submission, err error) {
+	rows, err := db.Query("SELECT id, uuid, product_uuid, user_id, creation_date FROM product_user_submissions ORDER BY id DESC")
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		result := Product_user_submission{}
+		if err = rows.Scan( &result.Id, &result.Uuid, &result.ProductUuid, &result.UserId, &result.CreationDate); err != nil {
+			return
+		}
+		product_user_submissions = append(product_user_submissions, result)
+	}
+	rows.Close()
+	return
+}
+
+//Update
+func (product_user_submission *Product_user_submission) UpdateProduct_user_submission(db *sql.DB) (result Product_user_submission, err error) {
+	stmt, err := db.Prepare("UPDATE product_user_submissions SET uuid = $2, product_uuid = $3, user_id = $4, creation_date = $5 WHERE (id = $1) RETURNING id, uuid, product_uuid, user_id, creation_date")
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	err = stmt.QueryRow( product_user_submission.Id, product_user_submission.Uuid, product_user_submission.ProductUuid, product_user_submission.UserId, product_user_submission.CreationDate).Scan( &result.Id, &result.Uuid, &result.ProductUuid, &result.UserId, &result.CreationDate)
+	return
+}
+
+//Delete
+func (product_user_submission *Product_user_submission) DeleteProduct_user_submission(db *sql.DB) (err error) {
+	stmt, err := db.Prepare("DELETE FROM product_user_submissions WHERE (id = $1)")
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(product_user_submission.Id)
+	return
+}
+
+//DeleteAll
+func DeleteAllProduct_user_submissions(db *sql.DB) (err error) {
+	stmt, err := db.Prepare("DELETE FROM product_user_submissions")
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec()
+	return
+}
+
+
+// ======= User_bug_report =======
+
+//Create Table
+func CreateTableUser_bug_reports(db *sql.DB) (err error) {
+	_, err = db.Exec("DROP TABLE IF EXISTS user_bug_reports CASCADE")
+	if err != nil {
+		return
+	}
+	_, err = db.Exec(`create table user_bug_reports ( id integer generated always as identity primary key , uuid varchar(36) not null unique , user_id integer references users(id) , creation_date timestamptz not null , location text not null , bug_report text not null , status text ) ; `)
+	return
+}
+
+//Drop Table
+func DropTableUser_bug_reports(db *sql.DB) (err error) {
+	_, err = db.Exec("DROP TABLE IF EXISTS user_bug_reports CASCADE")
+	return
+}
+
+//Struct
+type User_bug_report struct {
+	Id int32`xml:"Id" json:"id"`
+	Uuid string`xml:"Uuid" json:"uuid"`
+	UserId sql.NullInt32`xml:"UserId" json:"userid"`
+	CreationDate time.Time`xml:"CreationDate" json:"creationdate"`
+	Location string`xml:"Location" json:"location"`
+	BugReport string`xml:"BugReport" json:"bugreport"`
+	Status sql.NullString`xml:"Status" json:"status"`
+
+}
+
+//Create
+func (user_bug_report *User_bug_report) CreateUser_bug_report(db *sql.DB) (result User_bug_report, err error) {
+	stmt, err := db.Prepare("INSERT INTO user_bug_reports ( uuid, user_id, creation_date, location, bug_report, status) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id, uuid, user_id, creation_date, location, bug_report, status")
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+	err = stmt.QueryRow( user_bug_report.Uuid, user_bug_report.UserId, user_bug_report.CreationDate, user_bug_report.Location, user_bug_report.BugReport, user_bug_report.Status).Scan( &result.Id, &result.Uuid, &result.UserId, &result.CreationDate, &result.Location, &result.BugReport, &result.Status)
+	return
+}
+
+//Retrieve
+func (user_bug_report *User_bug_report) RetrieveUser_bug_report(db *sql.DB) (result User_bug_report, err error) {
+	result = User_bug_report{}
+	err = db.QueryRow("SELECT id, uuid, user_id, creation_date, location, bug_report, status FROM user_bug_reports WHERE (id = $1)", user_bug_report.Id).Scan( &result.Id, &result.Uuid, &result.UserId, &result.CreationDate, &result.Location, &result.BugReport, &result.Status)
+	return
+}
+
+//RetrieveAll
+func RetrieveAllUser_bug_reports(db *sql.DB) (user_bug_reports []User_bug_report, err error) {
+	rows, err := db.Query("SELECT id, uuid, user_id, creation_date, location, bug_report, status FROM user_bug_reports ORDER BY id DESC")
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		result := User_bug_report{}
+		if err = rows.Scan( &result.Id, &result.Uuid, &result.UserId, &result.CreationDate, &result.Location, &result.BugReport, &result.Status); err != nil {
+			return
+		}
+		user_bug_reports = append(user_bug_reports, result)
+	}
+	rows.Close()
+	return
+}
+
+//Update
+func (user_bug_report *User_bug_report) UpdateUser_bug_report(db *sql.DB) (result User_bug_report, err error) {
+	stmt, err := db.Prepare("UPDATE user_bug_reports SET uuid = $2, user_id = $3, creation_date = $4, location = $5, bug_report = $6, status = $7 WHERE (id = $1) RETURNING id, uuid, user_id, creation_date, location, bug_report, status")
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	err = stmt.QueryRow( user_bug_report.Id, user_bug_report.Uuid, user_bug_report.UserId, user_bug_report.CreationDate, user_bug_report.Location, user_bug_report.BugReport, user_bug_report.Status).Scan( &result.Id, &result.Uuid, &result.UserId, &result.CreationDate, &result.Location, &result.BugReport, &result.Status)
+	return
+}
+
+//Delete
+func (user_bug_report *User_bug_report) DeleteUser_bug_report(db *sql.DB) (err error) {
+	stmt, err := db.Prepare("DELETE FROM user_bug_reports WHERE (id = $1)")
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(user_bug_report.Id)
+	return
+}
+
+//DeleteAll
+func DeleteAllUser_bug_reports(db *sql.DB) (err error) {
+	stmt, err := db.Prepare("DELETE FROM user_bug_reports")
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec()
+	return
+}
+
+
+// ======= Trued_source =======
+
+//Create Table
+func CreateTableTrued_sources(db *sql.DB) (err error) {
+	_, err = db.Exec("DROP TABLE IF EXISTS trued_sources CASCADE")
+	if err != nil {
+		return
+	}
+	_, err = db.Exec(`create table trued_sources ( id integer generated always as identity primary key , trued_id integer not null unique references hypnostats(id) , sources text ) ; `)
+	return
+}
+
+//Drop Table
+func DropTableTrued_sources(db *sql.DB) (err error) {
+	_, err = db.Exec("DROP TABLE IF EXISTS trued_sources CASCADE")
+	return
+}
+
+//Struct
+type Trued_source struct {
+	Id int32`xml:"Id" json:"id"`
+	TruedId int32`xml:"TruedId" json:"truedid"`
+	Sources sql.NullString`xml:"Sources" json:"sources"`
+
+}
+
+//Create
+func (trued_source *Trued_source) CreateTrued_source(db *sql.DB) (result Trued_source, err error) {
+	stmt, err := db.Prepare("INSERT INTO trued_sources ( trued_id, sources) VALUES ($1,$2) RETURNING id, trued_id, sources")
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+	err = stmt.QueryRow( trued_source.TruedId, trued_source.Sources).Scan( &result.Id, &result.TruedId, &result.Sources)
+	return
+}
+
+//Retrieve
+func (trued_source *Trued_source) RetrieveTrued_source(db *sql.DB) (result Trued_source, err error) {
+	result = Trued_source{}
+	err = db.QueryRow("SELECT id, trued_id, sources FROM trued_sources WHERE (id = $1)", trued_source.Id).Scan( &result.Id, &result.TruedId, &result.Sources)
+	return
+}
+
+//RetrieveAll
+func RetrieveAllTrued_sources(db *sql.DB) (trued_sources []Trued_source, err error) {
+	rows, err := db.Query("SELECT id, trued_id, sources FROM trued_sources ORDER BY id DESC")
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		result := Trued_source{}
+		if err = rows.Scan( &result.Id, &result.TruedId, &result.Sources); err != nil {
+			return
+		}
+		trued_sources = append(trued_sources, result)
+	}
+	rows.Close()
+	return
+}
+
+//Update
+func (trued_source *Trued_source) UpdateTrued_source(db *sql.DB) (result Trued_source, err error) {
+	stmt, err := db.Prepare("UPDATE trued_sources SET trued_id = $2, sources = $3 WHERE (id = $1) RETURNING id, trued_id, sources")
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	err = stmt.QueryRow( trued_source.Id, trued_source.TruedId, trued_source.Sources).Scan( &result.Id, &result.TruedId, &result.Sources)
+	return
+}
+
+//Delete
+func (trued_source *Trued_source) DeleteTrued_source(db *sql.DB) (err error) {
+	stmt, err := db.Prepare("DELETE FROM trued_sources WHERE (id = $1)")
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(trued_source.Id)
+	return
+}
+
+//DeleteAll
+func DeleteAllTrued_sources(db *sql.DB) (err error) {
+	stmt, err := db.Prepare("DELETE FROM trued_sources")
 	if err != nil {
 		return
 	}

@@ -9,8 +9,6 @@ require (
 	github.com/timtadh/lexmachine v0.2.3
 )
 
-
-
 require (
 	github.com/lib/pq v1.10.7
 	github.com/timtadh/data-structures v0.6.2 // indirect

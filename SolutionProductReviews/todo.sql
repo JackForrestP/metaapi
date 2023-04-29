@@ -210,6 +210,7 @@ create table products (
     user_count integer not null , 
     count integer not null ,
     product_uuid varchar(36) not null references products(uuid) ,
+    created_at timestamptz, 
     tst decimal , 
     time_awake decimal , 
     time_rem decimal , 
@@ -219,4 +220,28 @@ create table products (
     score decimal , 
     sleep_onset decimal  ,
     sleep_efficiency decimal 
+  ) ;
+
+  create table product_user_submissions (
+    id integer generated always as identity primary key , 
+    uuid varchar(36) not null unique ,
+    product_uuid varchar(36) not null references products(uuid) ,
+    user_id integer not null references users(id), 
+    creation_date timestamptz not null
+  ) ;
+
+  create table user_bug_reports (
+    id integer generated always as identity primary key , 
+    uuid varchar(36) not null unique ,
+    user_id integer references users(id), 
+    creation_date timestamptz not null ,
+    location text not null ,
+    bug_report text not null ,
+    status text
+  ) ;
+
+  create table trued_sources (
+    id integer generated always as identity primary key , 
+    trued_id integer not null unique references hypnostats(id) ,
+    sources text
   ) ;
